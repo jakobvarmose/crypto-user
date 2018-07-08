@@ -22,7 +22,7 @@ const database = require('./database');
 
   const db = new database.Database('../data2');
 
-  app.use('/.well-known/crypto-user', api(db));
+  app.use('/.well-known/cryptouser', api(db));
   app.use('/', gui('../static'));
 
   app.listen(PORT, () => {
