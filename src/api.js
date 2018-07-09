@@ -41,9 +41,9 @@ module.exports = (db) => {
   const ipLimiter = new Limiter(50, 1);
   const userLimiter = new Limiter(5, 10);
 
-  app.post('/get_version', async (req, res, next) => {
+  app.get('/version', async (req, res, next) => {
     res.json({
-      version: '0.1',
+      version: 1,
     });
   });
 
