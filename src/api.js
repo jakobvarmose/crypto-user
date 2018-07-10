@@ -41,6 +41,16 @@ module.exports = (db) => {
   const ipLimiter = new Limiter(50, 1);
   const userLimiter = new Limiter(5, 10);
 
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+      return res.end();
+    }
+    next();
+  });
+
   app.get('/version', async (req, res, next) => {
     res.json({
       version: 1,
@@ -50,7 +60,7 @@ module.exports = (db) => {
   app.post('/create_user', async (req, res, next) => {
     try {
       const id = req.body.id;
-      if (typeof id !== 'string') {
+      if (typeof id !== 'string' || id === '') {
         return next(400);
       }
       const accessKey = req.body.accessKey;
@@ -94,7 +104,7 @@ module.exports = (db) => {
   app.post('/get_public', async (req, res, next) => {
     try {
       const id = req.body.id;
-      if (typeof id !== 'string') {
+      if (typeof id !== 'string' || id === '') {
         return next(400);
       }
       const key = getKey(req);
@@ -117,7 +127,7 @@ module.exports = (db) => {
   app.post('/get_protected', async (req, res, next) => {
     try {
       const id = req.body.id;
-      if (typeof id !== 'string') {
+      if (typeof id !== 'string' || id === '') {
         return next(400);
       }
       const authAccessKey = req.header('Authorization');
@@ -148,7 +158,7 @@ module.exports = (db) => {
   app.post('/update_user', async (req, res, next) => {
     try {
       const id = req.body.id;
-      if (typeof id !== 'string') {
+      if (typeof id !== 'string' || id === '') {
         return next(400);
       }
       const publicData = req.body.publicData;
@@ -194,7 +204,7 @@ module.exports = (db) => {
   app.post('/delete_user', async (req, res, next) => {
     try {
       const id = req.body.id;
-      if (typeof id !== 'string') {
+      if (typeof id !== 'string' || id === '') {
         return next(400);
       }
       const obj = await db.read(id);
