@@ -61,19 +61,27 @@ module.exports = (db) => {
     try {
       const id = req.body.id;
       if (typeof id !== 'string' || id === '') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing id',
+        });
       }
       const accessKey = req.body.accessKey;
       if (typeof accessKey !== 'string') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing accessKey',
+        });
       }
       const publicData = req.body.publicData;
       if (publicData === undefined) {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing publicData',
+        });
       }
       const protectedData = req.body.protectedData;
       if (protectedData === undefined) {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing protectedData',
+        });
       }
       const key = getKey(req);
       if (!createUserIpLimiter.check(key)) {
@@ -89,7 +97,9 @@ module.exports = (db) => {
       };
       const obj2 = await db.read(id);
       if (obj2 !== null) {
-        return next(409);
+        return res.status(409).json({
+          error: 'User already exists',
+        });
       }
       await db.create(id, obj);
       return res.json({
@@ -105,7 +115,9 @@ module.exports = (db) => {
     try {
       const id = req.body.id;
       if (typeof id !== 'string' || id === '') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing id',
+        });
       }
       const key = getKey(req);
       if (!getPublicIpLimiter.check(key)) {
@@ -114,7 +126,9 @@ module.exports = (db) => {
       getPublicIpLimiter.use(key);
       const obj = await db.read(id);
       if (!obj) {
-        return next(404);
+        return res.status(404).json({
+          error: 'User doesn\'t exist',
+        });
       }
       res.json({
         publicData: obj.publicData,
@@ -128,15 +142,21 @@ module.exports = (db) => {
     try {
       const id = req.body.id;
       if (typeof id !== 'string' || id === '') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing id',
+        });
       }
       const authAccessKey = req.header('Authorization');
       if (typeof authAccessKey !== 'string') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing Authorization',
+        });
       }
       const obj = await db.read(id);
       if (!obj) {
-        return next(404);
+        return res.status(404).json({
+          error: 'User doesn\'t exist',
+        });
       }
       const key = getKey(req);
       if (!ipLimiter.check(key) || !userLimiter.check(id)) {
@@ -159,23 +179,33 @@ module.exports = (db) => {
     try {
       const id = req.body.id;
       if (typeof id !== 'string' || id === '') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing id',
+        });
       }
       const publicData = req.body.publicData;
       if (publicData === undefined) {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing publicData',
+        });
       }
       const protectedData = req.body.protectedData;
       if (protectedData === undefined) {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing protectedData',
+        });
       }
       const accessKey = req.body.accessKey;
       if (typeof accessKey !== 'string') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing accessKey',
+        });
       }
       const authAccessKey = req.header('Authorization');
       if (typeof authAccessKey !== 'string') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing Authorization',
+        });
       }
       let obj = await db.read(id);
       const key = getKey(req);
@@ -205,11 +235,15 @@ module.exports = (db) => {
     try {
       const id = req.body.id;
       if (typeof id !== 'string' || id === '') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing id',
+        });
       }
       const obj = await db.read(id);
       if (!obj) {
-        return next(404);
+        return res.status(404).json({
+          error: 'User doesn\'t exist',
+        });
       }
       const key = getKey(req);
       if (!ipLimiter.check(key) || !userLimiter.check(id)) {
@@ -217,7 +251,9 @@ module.exports = (db) => {
       }
       const authAccessKey = req.header('Authorization');
       if (typeof authAccessKey !== 'string') {
-        return next(400);
+        return res.status(400).json({
+          error: 'Missing Authorization',
+        });
       }
       if (!hashCmp(authAccessKey, obj.accessKeyHash)) {
         ipLimiter.use(key);
